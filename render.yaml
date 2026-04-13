@@ -31,14 +31,3 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-# 1. Cambia date-fns de ^4 a ^3.6.0 en el package.json del repo
-sed -i 's/"date-fns": "^4..."/"date-fns": "^3.6.0"/g' package.json
-
-# 2. Saca la línea de @emergentbase
-sed -i '/@emergentbase/d' package.json
-
-# 3. Instala con legacy-peer-deps (acepta conflictos)
-npm install --legacy-peer-deps
-
-# 4. Build sin tratar warnings como errores
-CI=false npm run build
