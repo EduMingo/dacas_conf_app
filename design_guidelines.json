@@ -1,0 +1,81 @@
+{
+  "theme": "light",
+  "archetype": "4 (Swiss & High-Contrast - Mobile Utility)",
+  "colors": {
+    "background": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "primary": "#2563EB",
+    "primary_hover": "#1D4ED8",
+    "secondary": "#E2E8F0",
+    "text_main": "#0F172A",
+    "text_muted": "#64748B",
+    "success_cta": "#25D366",
+    "success_cta_hover": "#16A34A"
+  },
+  "typography": {
+    "heading_font": "Outfit",
+    "body_font": "IBM Plex Sans",
+    "h1": "text-2xl sm:text-3xl font-bold tracking-tight text-slate-900",
+    "h2": "text-lg font-semibold tracking-tight text-slate-800",
+    "body": "text-sm text-slate-600 leading-relaxed",
+    "label": "text-xs font-bold tracking-[0.05em] uppercase text-slate-500"
+  },
+  "layout_and_spacing": {
+    "container": "max-w-md mx-auto w-full min-h-screen bg-slate-50 relative pb-40 overflow-x-hidden",
+    "section_gap": "space-y-6",
+    "touch_target": "min-h-[3.5rem] px-4",
+    "card": "bg-white rounded-2xl border border-slate-200 p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]",
+    "sticky_bottom": "fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-safe shadow-[0_-12px_40px_rgba(0,0,0,0.08)] z-50 md:max-w-md md:mx-auto md:left-auto md:right-auto md:w-full rounded-t-2xl"
+  },
+  "components": {
+    "header": {
+      "style": "sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 px-5 py-4 flex flex-col justify-center",
+      "rules": "Text-only company name at the top (small, slate-500, font-bold uppercase), followed by the main title 'Configurador de Stock' (h1, slate-900)."
+    },
+    "selector_button": {
+      "default": "flex flex-col items-center justify-center p-4 rounded-xl border-2 border-slate-100 bg-white text-slate-600 transition-all active:scale-95 focus:outline-none",
+      "active": "border-blue-600 bg-blue-50 text-blue-700 shadow-sm",
+      "icon_wrapper": "mb-2 text-2xl"
+    },
+    "quantity_control": {
+      "wrapper": "flex items-center justify-between bg-slate-100 p-1.5 rounded-xl border border-slate-200 w-32",
+      "button": "w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm text-slate-700 active:bg-slate-50 active:scale-95 transition-transform",
+      "value": "flex-1 text-center font-bold text-slate-900 text-base"
+    },
+    "whatsapp_button": {
+      "style": "w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#16A34A] text-white font-bold py-4 px-6 rounded-xl active:scale-[0.98] transition-all shadow-lg shadow-green-500/20 text-lg"
+    },
+    "accessory_row": {
+      "style": "flex items-center justify-between py-3 border-b border-slate-100 last:border-0"
+    }
+  },
+  "interactions": {
+    "hover_states": "Subtle hover effects translated to active/tap states for mobile focus. Use active:scale-95 for tactile feedback on buttons.",
+    "animations": "Use framer-motion. Animate the entrance of the Product Card and Accessories list (opacity 0 to 1, y: 10 to 0) to draw attention to the auto-calculated results.",
+    "toast": "Use sonner for non-intrusive feedback (e.g., '16 Jacks recomendados añadidos') when the user adds a Bobina."
+  },
+  "assets": {
+    "icons": [
+      { "name": "Building2", "library": "lucide-react", "use": "Oficina project" },
+      { "name": "Video", "library": "lucide-react", "use": "CCTV project" },
+      { "name": "Server", "library": "lucide-react", "use": "Data Center project" },
+      { "name": "Plus", "library": "lucide-react", "use": "Quantity add" },
+      { "name": "Minus", "library": "lucide-react", "use": "Quantity subtract" },
+      { "name": "Package", "library": "lucide-react", "use": "Product item icon" },
+      { "name": "Cable", "library": "lucide-react", "use": "Accessories icon" },
+      { "name": "MessageCircle", "library": "lucide-react", "use": "WhatsApp button icon" },
+      { "name": "CheckCircle2", "library": "lucide-react", "use": "Active selection indicator" }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "CRITICAL: This is a strictly MOBILE-FIRST, single-page application. Structure the main layout with a max-width wrapper (`max-w-md mx-auto min-h-screen relative overflow-hidden bg-slate-50`) so it perfectly mimics a mobile app even on desktop monitors.",
+    "Use standard HTML tags (`div`, `section`, `button`) paired with Tailwind CSS for structural layout to maintain the required 'delivery app' aesthetic (large touch targets, rounded edges, generous padding). Avoid generic Shadcn cards for the main interactive grid; use custom tailored markup as defined in the guidelines.",
+    "Mocking the Excel Data: Since the user didn't upload the actual Excel file, create a constant JavaScript array/object mimicking the stock database. Structure: Projects (Oficina, CCTV, Data Center), Brands (Siemon, Panduit, CommScope). Products should include 'Bobina UTP Cat 6 [Brand]', and specific accessories like 'Jack RJ45 [Brand]', 'Patch Cord 1m [Brand]', 'Faceplate 2 puertos'.",
+    "Dynamic BOM & Auto-rule Logic: When a Brand and Project are selected, reveal the main product card (e.g., Bobina). When its quantity > 0, automatically render/suggest the related accessories below it. For every 1 Bobina added, auto-increment the accessories (e.g., +16 Jacks, +16 Patch Cords, +8 Faceplates). Allow the user to manually adjust these auto-suggested quantities using their own +/- buttons.",
+    "Sticky Bottom Summary: Create a fixed block at the bottom of the screen (`fixed bottom-0 w-full max-w-md bg-white p-4 border-t z-50`). It must show a brief text summary (e.g., '3 items seleccionados') and contain the large WhatsApp button.",
+    "WhatsApp Action CTA: The button must construct a `whatsapp://send?text=` or `https://wa.me/?text=` URI. Format the text logically: 'Hola, armé un presupuesto para un proyecto de [Project].%0A%0AItems:%0A- [Qty]x [Item 1]%0A- [Qty]x [Item 2]%0A%0A¿Me confirman disponibilidad y precio?'. Use `window.open(url, '_blank')` to trigger the app/web-whatsapp.",
+    "Do NOT use TypeScript (.tsx / .ts). Ensure all code is strictly standard JavaScript (.js / .jsx).",
+    "ALL interactive elements (buttons, quantity +/-, project selectors, brand selectors) MUST have a descriptive `data-testid` attribute (e.g., `data-testid='btn-project-cctv'`, `data-testid='btn-add-bobina'`).",
+    "Use `framer-motion` to smoothly animate the appearance of the main product card and the accessories list once the user makes their selections."
+  ]
+}

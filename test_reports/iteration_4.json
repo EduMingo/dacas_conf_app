@@ -1,0 +1,60 @@
+{
+  "summary": "Backend + frontend regression executed on public preview URL for the new pre-sale configurator flow. Core UI flow, engineering BOM math (Oficina 24 puntos), stock crossing states, WhatsApp SKU message, manual stock add, and mobile flow passed. One backend contract mismatch found against requested logic.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/configurator",
+        "issue": "technical_rule.jacks_per_point returns 2 for all project/brand combinations, but requested preventa logic is 1 jack per point (+5% reserve at BOM calculation layer).",
+        "priority": "HIGH"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "PDF preview popup validation (desktop automation)",
+        "issue": "Popup URL was reported as ':' by browser automation runtime; WhatsApp popup worked correctly. Manual verification is recommended to confirm generated PDF opens consistently across environments.",
+        "affected_selectors": [
+          "[data-testid='desktop-preview-pdf-button']"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Mobile sticky footer",
+        "issues": [
+          "Preview environment watermark overlaps bottom-right CTA area, reducing visibility of WhatsApp button label."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_configurator_api.py",
+    "/app/backend/tests/test_preventa_rules_contract.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Update backend technical_rule payload generation so jacks_per_point reflects requested base ratio (1 per point), keeping +5% reserve in BOM computation layer.",
+    "Re-run backend pytest after fix and verify no API contract regressions.",
+    "Re-check PDF popup behavior in real browser session to confirm blob preview reliability."
+  ],
+  "critical_code_review_comments": [
+    "backend/stock_catalog.py:_technical_rule_payload currently exposes legacy ratios (jacks_per_point=2) that conflict with the new engineering rule set and can mislead API consumers.",
+    "frontend engineeringBom.js correctly applies requested formulas for LPC, 10% waste, coils, jacks +5%, faceplate mode, patch panel modularity (24 preferred), and stock status mapping."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_preventa_rules_contract.py",
+    "/app/test_reports/iteration_4.json"
+  ],
+  "success_rate": {
+    "backend": "91%",
+    "frontend": "95%"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Validated on https://network-bom-tool.preview.emergentagent.com. Confirmed Oficina>Ampliación>Siemon>24 gives 1188m, 4 coils, 26 jacks, 12 faceplates, 1 patch panel; patch cord lengths are user-adjustable and reflected in BOM + WhatsApp. Additional scenario CCTV>Commscope>96 confirmed available/short/generic statuses coexist. One backend contract test fails on jacks_per_point value.",
+  "rca of the issue": "RCA: In backend/stock_catalog.py, _technical_rule_payload is hardcoded with jacks_per_point=2 (legacy rule) and returned by /api/configurator for every project-brand pair. Reproduction: run pytest /app/backend/tests/test_preventa_rules_contract.py::TestPreventaRulesContract::test_jacks_per_point_matches_requested_logic. Mitigation: align payload field to base ratio=1 (and keep reserve handling where BOM calculations occur), then rerun full backend suite."
+}
