@@ -102,6 +102,7 @@ export default function ConfiguratorPage() {
   const [selectedRackCordLength, setSelectedRackCordLength] = useState("");
   const [pointsConfirmed, setPointsConfirmed] = useState(false);
   const [manualItemQuantities, setManualItemQuantities] = useState({});
+  const [bomQuantityOverrides, setBomQuantityOverrides] = useState({});
   const [stockSearch, setStockSearch] = useState("");
   const [selectedStockCategory, setSelectedStockCategory] = useState("all");
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -184,9 +185,10 @@ export default function ConfiguratorPage() {
     const aggregated = new Map();
 
     (engineeringBom?.rows || []).forEach((row) => {
+      const finalQty = bomQuantityOverrides[row.id] ?? row.quantity;
       aggregated.set(row.id, {
         id: row.id,
-        quantity: row.quantity,
+        quantity: finalQty,
         name: row.name,
         article: row.article,
         category: row.category,
@@ -216,7 +218,7 @@ export default function ConfiguratorPage() {
     });
 
     return sortSummaryItems([...aggregated.values()]);
-  }, [brandInventory, engineeringBom?.rows, manualItemQuantities]);
+  }, [brandInventory, engineeringBom?.rows, manualItemQuantities, bomQuantityOverrides]);
 
   const whatsappItems = summaryItems.filter((item) => includedItemIds.includes(item.id));
   const previewText = summaryItems.slice(0, 2).map((item) => `${item.quantity}x ${item.article}`).join(" · ");
@@ -241,6 +243,7 @@ export default function ConfiguratorPage() {
     setPointCount(24);
     setPointsConfirmed(false);
     setManualItemQuantities({});
+    setBomQuantityOverrides({});
     setStockSearch("");
     setSelectedStockCategory("all");
   };
@@ -248,6 +251,7 @@ export default function ConfiguratorPage() {
   const handleBrandSelect = (brandId) => {
     setSelectedBrandId(brandId);
     setManualItemQuantities({});
+    setBomQuantityOverrides({});
     setStockSearch("");
     setSelectedStockCategory("all");
   };
@@ -257,6 +261,7 @@ export default function ConfiguratorPage() {
     setPointsConfirmed(false);
     setSelectedBrandId("");
     setManualItemQuantities({});
+    setBomQuantityOverrides({});
   };
 
   const handleManualItemQuantity = (itemId, delta) => {
@@ -592,7 +597,34 @@ export default function ConfiguratorPage() {
                               <div className="font-medium text-slate-900">{row.name}</div>
                               <div className="mt-1 text-xs text-slate-500">{CATEGORY_LABELS[row.category] || row.category}</div>
                             </td>
-                            <td className="px-3 py-3 font-semibold text-slate-900">{row.quantity}</td>
+                            <td className="px-3 py-3">
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => setBomQuantityOverrides(prev => ({
+                                    ...prev,
+                                    [row.id]: Math.max(0, (prev[row.id] ?? row.quantity) - 1)
+                                  }))}
+                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 text-xs font-bold"
+                                >−</button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={bomQuantityOverrides[row.id] ?? row.quantity}
+                                  onChange={e => setBomQuantityOverrides(prev => ({
+                                    ...prev,
+                                    [row.id]: Math.max(0, parseInt(e.target.value) || 0)
+                                  }))}
+                                  className="w-14 rounded-lg border border-slate-200 bg-white px-2 py-1 text-center text-sm font-semibold text-slate-900 focus:border-slate-400 focus:outline-none"
+                                />
+                                <button
+                                  onClick={() => setBomQuantityOverrides(prev => ({
+                                    ...prev,
+                                    [row.id]: (prev[row.id] ?? row.quantity) + 1
+                                  }))}
+                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300 text-xs font-bold"
+                                >+</button>
+                              </div>
+                            </td>
                             <td className="px-3 py-3">{row.unit}</td>
                             <td className="rounded-r-[1rem] px-3 py-3">
                               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[row.status]}`} data-testid={`bom-row-status-${row.id}`}>
