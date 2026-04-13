@@ -1,5 +1,4 @@
 services:
-  # ── Backend FastAPI ──────────────────────────────────────────────
   - type: web
     name: dacas-backend
     runtime: python
@@ -15,12 +14,15 @@ services:
       - key: PYTHON_VERSION
         value: "3.11.0"
 
-  # ── Frontend React (Static Site) ─────────────────────────────────
   - type: web
     name: dacas-frontend
     runtime: static
     rootDir: frontend
-    buildCommand: npm install && CI=false npm run build
+    buildCommand: >
+      sed -i 's/"date-fns": "\^4[^"]*"/"date-fns": "^3.6.0"/g' package.json &&
+      sed -i '/@emergentbase/d' package.json &&
+      npm install --legacy-peer-deps &&
+      CI=false npm run build
     staticPublishPath: build
     envVars:
       - key: REACT_APP_BACKEND_URL
