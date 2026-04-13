@@ -19,6 +19,7 @@ services:
     runtime: static
     rootDir: frontend
     buildCommand: >
+      sed -i 's/"react-day-picker": "8\.10\.1"/"react-day-picker": "^9.0.0"/g' package.json &&
       sed -i 's/"date-fns": "\^4[^"]*"/"date-fns": "^3.6.0"/g' package.json &&
       sed -i '/@emergentbase/d' package.json &&
       npm install --legacy-peer-deps &&
